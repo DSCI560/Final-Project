@@ -13,10 +13,4 @@ i) Images associated with the answers in topic documents
 ii) Images from associated videos (snapshots with timestamps and links) 
 iii) Transcripts of the videos for answering questions 
 
-3) Suggested Project Schedule/Milestones 
-a) March 25: Identify specific courses with available data types. 
-i) Tests/Images (books, PDFs, websites, Wikipedia, lecture notes, forums, 
-blackboard, etc.) 
-ii) Videos (lecture videos, YouTube videos, tutorials, etc.) 
-iii) Build programs to scrape and process an initial set of data. 
-iv) Build a database of data chunks and embeddings from the set of data.
+
