@@ -2,7 +2,8 @@
 HealthEdBot is a ChatBot that acts as a virtual TA for the Obesity and Health Course
 
 #requirement
-1) Minimum Requirements 
+Minimum Requirements
+   
 a) A working web-based user interaction with electronic/virtual TA 
 i) Piazza interface (automated login, real-time data collection, and answers) 
 ii) Web forum interface (automated login, real-time data collection, and answers) 
