@@ -14,4 +14,7 @@ i) Images associated with the answers in topic documents
 ii) Images from associated videos (snapshots with timestamps and links) 
 iii) Transcripts of the videos for answering questions 
 
+data--Yifan Yang
+database--daoyang Li
+front and LLMs--Cici Cheng
 
