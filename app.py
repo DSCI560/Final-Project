@@ -2,7 +2,7 @@ import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings, HuggingFaceInstructEmbeddings
+from langchain.embeddings import OpenAIEmbeddings, HuggingFaceEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
@@ -14,6 +14,11 @@ import pandas as pd
 import psycopg2
 import requests
 from bs4 import BeautifulSoup
+from openai import OpenAI
+from io import BytesIO
+from langchain.schema import HumanMessage, AIMessage
+from langchain.chat_models import ChatOpenAI
+from PIL import Image
 
 
 
@@ -27,13 +32,6 @@ def connect_to_database():
         password="your_password"
     )
     return conn
-
-
-# get csv data 
-# def get_csv_data():
-#     csv_file = "path/to/your/csv/file.csv"
-#     df = pd.read_csv(csv_file)
-#     return df.to_string(index=False)
 
 
 def scrape_website(url):
@@ -64,22 +62,16 @@ def get_text_chunks(text):
 
 
 def get_vectorstore(text_chunks):
-    # embeddings = OpenAIEmbeddings()
-    # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2")
+    embeddings = OpenAIEmbeddings()
+    # embeddings = HuggingFaceEmbeddings(
+    #     model_name="sentence-transformers/all-MiniLM-L6-v2")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
 
 def get_conversation_chain(vectorstore):
-    # llm = ChatOpenAI()
-    llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
-    # llm = HuggingFacePipeline.from_model_id(
-    #     model_id="lmsys/vicuna-7b-v1.3",
-    #     task="text-generation",
-    #     model_kwargs={"temperature": 0.01},
-    # )
+    llm = ChatOpenAI()
+    # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
 
     memory = ConversationBufferMemory(
         memory_key='chat_history', return_messages=True)
@@ -89,6 +81,8 @@ def get_conversation_chain(vectorstore):
         memory=memory
     )
     return conversation_chain
+
+
 
 
 def handle_userinput(user_question):
@@ -102,6 +96,50 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
+            
+    image_mappings = {
+        "bmi": "img/bmi.jpeg",
+        "obesity risks": "img/risk_of_overweight.jpeg",
+        "healthy lifestyle": "img/healthy_lifestyle.jpeg"
+    }
+
+    # video_mappings = {
+    #     "exercise": {"path": "vid/exercise.mp4", "timestamp": "1:30"},
+    #     "healthy diet": {"path": "vid/healthy_diet.mp4", "timestamp": "2:15"},
+    #     "weight loss tips": {"path": "vid/weight_loss_tips.mp4", "timestamp": "0:45"}
+    # }
+
+    # Check if the user's question contains any of the specified keywords
+    for keyword, image_path in image_mappings.items():
+        if keyword.lower() in user_question.lower():
+            # Read the image file and display it using Streamlit
+            image = Image.open(image_path)
+            st.image(image, caption=f"Image related to: {keyword}")
+            break
+
+    # # Check if the user's question contains any of the specified keywords for videos
+    # for keyword, video_data in video_mappings.items():
+    #     if keyword.lower() in user_question.lower():
+    #         video_path = video_data["path"]
+    #         timestamp = video_data["timestamp"]
+
+    #         # Read the video file and display it using Streamlit
+    #         video_file = open(video_path, 'rb')
+    #         video_bytes = video_file.read()
+
+    #         # Create the video URL with the timestamp
+    #         video_url = f"data:video/mp4;base64,{base64.b64encode(video_bytes).decode()}"
+    #         video_url += f"#t={timestamp}"
+
+    #         # Display the video with the timestamp
+    #         st.video(video_url)
+
+    #         # Display the timestamp information
+    #         st.write(f"Video timestamp: {timestamp}")
+    #         break
+
+
+
 
 
 def main():
@@ -137,21 +175,6 @@ def main():
                 # create conversation chain
                 st.session_state.conversation = get_conversation_chain(
                     vectorstore)
-       
-        # if st.button("Use CSV data"):
-        #     with st.spinner("Processing CSV data"):
-        #         # get csv data
-        #         csv_data = get_csv_data()
-
-        #         # get the text chunks
-        #         text_chunks = get_text_chunks(csv_data)
-
-        #         # create vector store
-        #         vectorstore = get_vectorstore(text_chunks)
-
-        #         # create conversation chain
-        #         st.session_state.conversation = get_conversation_chain(
-        #             vectorstore)
                 
 
         website_url = st.text_input("Enter a website URL to scrape:")
