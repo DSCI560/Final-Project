@@ -52,6 +52,7 @@ css = '''
     justify-content: flex-start;
 }
 .chat-message.bot .message {
+    background-color: #ffffff;
     border: 2px solid #2196f3;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
