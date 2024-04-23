@@ -3,7 +3,7 @@ HealthEdBot is a ChatBot that acts as a virtual TA for the Obesity and Health Co
 
 
 ## usage
-* streamlit run app.py *
+```streamlit run app.py```
 
 
 #requirement
