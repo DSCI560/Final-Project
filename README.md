@@ -6,7 +6,7 @@ HealthEdBot is a ChatBot that acts as a virtual TA for the Obesity and Health Co
 ```streamlit run app.py```
 
 
-#requirement
+## requirement
 Minimum Requirements
    
 a) A working web-based user interaction with electronic/virtual TA 
